@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Machine Learning Concepts Game</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f5f5f5;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .wrapper {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        .navigation {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 10px;
+            display: flex;
+            justify-content: flex-start;
+            gap: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .nav-btn {
+            background: rgba(0, 0, 0, 0.1);
+            border: none;
+            padding: 10px 20px;
+            color: #333;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .nav-btn:hover {
+            background: rgba(0, 0, 0, 0.2);
+            transform: translateX(5px);
+        }
+
+        .content-wrapper {
+            flex: 1;
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 20px;
+            padding: 20px;
+            overflow: hidden;
+        }
+
+        #gameArea {
+            position: relative;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 15px;
+            padding: 20px;
+            overflow: hidden;
+            min-height: 500px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .sidebar {
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 15px;
+            padding: 20px;
+            color: #333;
+            overflow-y: auto;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .sidebar h3 {
+            font-size: 1.5em;
+            margin-bottom: 15px;
+            color: #222;
+        }
+
+        .sidebar p {
+            font-size: 1em;
+            line-height: 1.6;
+        }
+
+        .concept-bubble {
+            position: absolute;
+            padding: 15px;
+            border-radius: 50%;
+            background: rgba(66, 133, 244, 0.9);
+            color: white;
+            cursor: pointer;
+            transition: transform 0.3s, background-color 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            font-size: 14px;
+            box-shadow: 0 0 15px rgba(66, 133, 244, 0.3);
+            user-select: none;
+            z-index: 1;
+        }
+
+        .concept-bubble:hover {
+            transform: scale(1.1);
+        }
+
+        .concept-bubble.correct {
+            background: rgba(46, 204, 113, 0.9);
+            box-shadow: 0 0 15px rgba(46, 204, 113, 0.3);
+        }
+
+        .concept-bubble.wrong {
+            background: rgba(231, 76, 60, 0.9);
+            box-shadow: 0 0 15px rgba(231, 76, 60, 0.3);
+        }
+
+        #target {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.95);
+            color: #333;
+            padding: 20px;
+            text-align: center;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            z-index: 2;
+        }
+
+        #score {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.95);
+            color: #333;
+            padding: 10px 20px;
+            border-radius: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            z-index: 2;
+        }
+    </style>
+</head>
+<body>
+    <div class="wrapper">
+        <div class="navigation">
+            <button onclick="window.location.href='Supervised Vs Unsupervised.html'" class="nav-btn">← Back to Supervised vs Unsupervised</button>
+        </div>
+
+        <div class="content-wrapper">
+            <div id="gameArea">
+                <div id="target">Find: Loading...</div>
+                <div id="score">Score: 0 / 15</div>
+            </div>
+
+            <div class="sidebar">
+                <h3>How to Play</h3>
+                <p>Test your knowledge of machine learning! Click the floating bubbles to match them with the description displayed at the bottom. Correct matches glow green, while incorrect ones flash red. Can you find all 15 concepts to win?</p>
+                <p><strong>Pro Tip:</strong> Hover over a bubble to enlarge it for easier reading.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const mlConcepts = [
+            { concept: "Supervised Learning", description: "Uses labeled data to train algorithms for accurate predictions." },
+            { concept: "Unsupervised Learning", description: "Discovers patterns in data without any labeled examples." },
+            { concept: "Classification", description: "Assigns data to predefined categories or classes." },
+            { concept: "Clustering", description: "Groups similar data points based on shared features." },
+            { concept: "Regression", description: "Predicts continuous values using input variables." },
+            { concept: "K-means", description: "Divides data into K clusters by minimizing distances to centroids." },
+            { concept: "Decision Trees", description: "Splits data into branches based on feature decisions." },
+            { concept: "Neural Networks", description: "Mimics the brain with layers of interconnected nodes." },
+            { concept: "Deep Learning", description: "Employs multi-layered neural networks for advanced insights." },
+            { concept: "Reinforcement Learning", description: "Optimizes actions through trial-and-error rewards." },
+            { concept: "Random Forest", description: "Boosts accuracy with an ensemble of decision trees." },
+            { concept: "SVM", description: "Separates classes with the best-fitting hyperplane." },
+            { concept: "Gradient Descent", description: "Minimizes errors by adjusting model parameters." },
+            { concept: "Overfitting", description: "Learns training data too well, struggles with new data." },
+            { concept: "Feature Selection", description: "Picks the most impactful variables for model success." }
+        ];
+
+        let currentTarget = null;
+        let score = 0;
+        let foundConcepts = new Set();
+        let bubbles = [];
+
+        function createBubble(concept) {
+            const bubble = document.createElement('div');
+            bubble.className = 'concept-bubble';
+            bubble.textContent = concept;
+            bubble.style.width = Math.random() * 60 + 80 + 'px';
+            bubble.style.height = bubble.style.width;
+
+            const velocity = {
+                x: (Math.random() - 0.5) * 2,
+                y: (Math.random() - 0.5) * 2
+            };
+
+            bubbles.push({ element: bubble, velocity });
+            resetBubblePosition(bubble);
+
+            bubble.onclick = () => checkConcept(concept, bubble);
+            return bubble;
+        }
+
+        function resetBubblePosition(bubble) {
+            const gameArea = document.getElementById('gameArea');
+            const questionHeight = document.getElementById('target').offsetHeight;
+            const maxX = gameArea.clientWidth - parseInt(bubble.style.width);
+            const maxY = gameArea.clientHeight - questionHeight - parseInt(bubble.style.height);
+
+            bubble.style.left = Math.random() * maxX + 'px';
+            bubble.style.top = Math.random() * maxY + 'px';
+        }
+
+        function animateBubbles() {
+            const gameArea = document.getElementById('gameArea');
+            const questionHeight = document.getElementById('target').offsetHeight;
+            const maxX = gameArea.clientWidth;
+            const maxY = gameArea.clientHeight - questionHeight;
+
+            bubbles.forEach(bubble => {
+                const rect = bubble.element.getBoundingClientRect();
+                let x = parseFloat(bubble.element.style.left);
+                let y = parseFloat(bubble.element.style.top);
+
+                bubble.velocity.x += (Math.random() - 0.5) * 0.1;
+                bubble.velocity.y += (Math.random() - 0.5) * 0.1;
+
+                bubble.velocity.x = Math.max(Math.min(bubble.velocity.x, 2), -2);
+                bubble.velocity.y = Math.max(Math.min(bubble.velocity.y, 2), -2);
+
+                x += bubble.velocity.x;
+                y += bubble.velocity.y;
+
+                if (x <= 0 || x >= maxX - rect.width) {
+                    bubble.velocity.x *= -1;
+                    x = Math.max(0, Math.min(x, maxX - rect.width));
+                }
+                if (y <= 0 || y >= maxY - rect.height) {
+                    bubble.velocity.y *= -1;
+                    y = Math.max(0, Math.min(y, maxY - rect.height));
+                }
+
+                bubble.element.style.left = x + 'px';
+                bubble.element.style.top = y + 'px';
+            });
+            requestAnimationFrame(animateBubbles);
+        }
+
+        function setNewTarget() {
+            const remaining = mlConcepts.filter(c => !foundConcepts.has(c.concept));
+            if (remaining.length === 0) {
+                alert('Well done! You’ve mastered all the concepts!');
+                resetGame();
+                return;
+            }
+            currentTarget = remaining[Math.floor(Math.random() * remaining.length)];
+            document.getElementById('target').innerHTML = `
+                Find the concept that: <br><strong>${currentTarget.description}</strong>
+            `;
+        }
+
+        function checkConcept(concept, bubbleElement) {
+            if (concept === currentTarget.concept) {
+                bubbleElement.classList.add('correct');
+                setTimeout(() => {
+                    bubbleElement.classList.remove('correct');
+                }, 500);
+                foundConcepts.add(concept);
+                score++;
+                document.getElementById('score').textContent = `Score: ${score} / 15`;
+                setNewTarget();
+            } else {
+                bubbleElement.classList.add('wrong');
+                setTimeout(() => {
+                    bubbleElement.classList.remove('wrong');
+                }, 500);
+            }
+        }
+
+        function initGame() {
+            const gameArea = document.getElementById('gameArea');
+            const target = document.getElementById('target');
+            const score = document.getElementById('score');
+            gameArea.innerHTML = '';
+            gameArea.appendChild(target);
+            gameArea.appendChild(score);
+
+            bubbles = [];
+
+            mlConcepts.forEach(item => {
+                const bubble = createBubble(item.concept);
+                gameArea.appendChild(bubble);
+            });
+
+            setNewTarget();
+            animateBubbles();
+        }
+
+        function resetGame() {
+            score = 0;
+            foundConcepts.clear();
+            document.getElementById('score').textContent = 'Score: 0 / 15';
+            initGame();
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            initGame();
+        });
+    </script>
+</body>
+</html>

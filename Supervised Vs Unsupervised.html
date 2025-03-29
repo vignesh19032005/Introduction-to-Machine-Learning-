@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Supervised vs. Unsupervised Learning</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f5f5f5;
+            margin: 0;
+            padding: 0;
+            color: #333;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .wrapper {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        .navigation {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 10px;
+            display: flex;
+            justify-content: flex-start;
+            gap: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .nav-btn {
+            background: rgba(0, 0, 0, 0.1);
+            border: none;
+            padding: 10px 20px;
+            color: #333;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .nav-btn:hover {
+            background: rgba(0, 0, 0, 0.2);
+            transform: translateX(5px);
+        }
+
+        .content-wrapper {
+            flex: 1;
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 20px;
+            padding: 20px;
+            overflow: hidden;
+        }
+
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 15px;
+            padding: 20px;
+            overflow-y: auto;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .sidebar {
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 15px;
+            padding: 20px;
+            color: #333;
+            overflow-y: auto;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .sidebar h3 {
+            font-size: 1.5em;
+            margin-bottom: 15px;
+            color: #222;
+        }
+
+        .sidebar p {
+            font-size: 1em;
+            line-height: 1.6;
+        }
+
+        .top-bar {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            margin: 0;
+            color: #222;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+        }
+
+        .tabs {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .tab-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 25px;
+            background: #ff6f61;
+            color: white;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .tab-btn:hover, .tab-btn.active {
+            background: #e65b50;
+            transform: scale(1.05);
+        }
+
+        .panel {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            position: relative;
+            transition: transform 0.3s;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .panel.active {
+            display: block;
+        }
+
+        .panel:hover {
+            transform: translateY(-5px);
+        }
+
+        h2 {
+            text-align: center;
+            color: #2a5298;
+            margin: 0 0 15px;
+        }
+
+        canvas {
+            border: 2px dashed #ccc;
+            border-radius: 10px;
+            width: 100%;
+            height: 250px;
+            background: #fff;
+            cursor: crosshair;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        button, select {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 25px;
+            background: #ff6f61;
+            color: white;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        button:hover, select:hover {
+            background: #e65b50;
+            transform: scale(1.05);
+        }
+
+        .class-btn {
+            opacity: 0.6;
+        }
+
+        .class-btn.active {
+            opacity: 1;
+        }
+
+        .class-a { background: #e74c3c; }
+        .class-a:hover { background: #c0392b; }
+        .class-b { background: #3498db; }
+        .class-b:hover { background: #2980b9; }
+
+        .progress {
+            height: 8px;
+            background: #e0e0e0;
+            margin-top: 15px;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #ff6f61, #ffb07c);
+            width: 0%;
+            transition: width 0.2s ease;
+        }
+
+        .info {
+            display: none;
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(255, 255, 255, 0.9);
+            color: #333;
+            padding: 12px;
+            border-radius: 8px;
+            max-width: 250px;
+            font-size: 0.9em;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .tooltip {
+            position: absolute;
+            background: #555;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 0.8em;
+            pointer-events: none;
+            display: none;
+        }
+
+        .cluster-controls {
+            text-align: center;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="wrapper">
+        <div class="navigation">
+            <button onclick="window.location.href='Venn_Diagram.html'" class="nav-btn">← Back to AI/ML/DL Concepts</button>
+            <button onclick="window.location.href='ML_Game.html'" class="nav-btn">Next: ML Concepts Game →</button>
+        </div>
+
+        <div class="content-wrapper">
+            <div class="main-content">
+                <div class="top-bar">
+                    <h1>Supervised vs. Unsupervised Learning</h1>
+                    <select id="dataset">
+                        <option value="simple">Simple (Linearly Separable)</option>
+                        <option value="complex">Complex (Non-linear)</option>
+                        <option value="random">Random</option>
+                    </select>
+                </div>
+
+                <div class="tabs">
+                    <button class="tab-btn active" data-tab="supervised">Supervised</button>
+                    <button class="tab-btn" data-tab="unsupervised">Unsupervised</button>
+                </div>
+
+                <div class="panel active" id="supervisedPanel">
+                    <h2>Supervised Learning</h2>
+                    <div style="text-align: center; margin-bottom: 10px;">
+                        <button id="supervisedClassA" class="class-btn class-a active">Class A (Red)</button>
+                        <button id="supervisedClassB" class="class-btn class-b">Class B (Blue)</button>
+                    </div>
+                    <canvas id="supervisedCanvas"></canvas>
+                    <div class="progress"><div class="progress-bar" id="supervisedProgress"></div></div>
+                    <div class="info" id="supervisedInfo">Click to place points! Choose a class above, then see the decision boundary adapt.</div>
+                </div>
+
+                <div class="panel" id="unsupervisedPanel">
+                    <h2>Unsupervised Learning</h2>
+                    <div class="cluster-controls">
+                        <button id="unsupervisedClassA" class="class-btn class-a active">Group A (Red)</button>
+                        <button id="unsupervisedClassB" class="class-btn class-b">Group B (Blue)</button>
+                        <select id="clusterCount">
+                            <option value="2">2 Clusters</option>
+                            <option value="3">3 Clusters</option>
+                            <option value="4">4 Clusters</option>
+                        </select>
+                    </div>
+                    <canvas id="unsupervisedCanvas"></canvas>
+                    <div class="progress"><div class="progress-bar" id="unsupervisedProgress"></div></div>
+                    <div class="info" id="unsupervisedInfo">Click to add points! Observe K-means clustering group them by proximity. Adjust clusters above.</div>
+                </div>
+
+                <div class="controls">
+                    <button id="playPause">Play</button>
+                    <button id="reset">Reset</button>
+                    <button id="stepForward">Step Forward</button>
+                    <button id="infoToggle">Toggle Info</button>
+                    <button id="randomize">Randomize</button>
+                </div>
+            </div>
+
+            <div class="sidebar" id="sidebar">
+                <h3>Learning Insights</h3>
+                <div id="supervisedSidebarInfo">
+                    <p><strong>What is it?</strong> Supervised Learning trains models on labeled data, where each input comes with a known output, enabling accurate predictions.</p>
+                    <p><strong>Key Features:</strong>
+                        <ul>
+                            <li>Uses labeled datasets (input-output pairs).</li>
+                            <li>Popular methods: Linear Regression, Logistic Regression, SVM.</li>
+                            <li>Examples: Spam detection, image classification.</li>
+                        </ul>
+                    </p>
+                </div>
+                <div id="unsupervisedSidebarInfo" style="display: none;">
+                    <p><strong>What is it?</strong> Unsupervised Learning uncovers patterns or clusters in unlabeled data without predefined outputs.</p>
+                    <p><strong>Key Features:</strong>
+                        <ul>
+                            <li>Operates on unlabeled datasets.</li>
+                            <li>Popular methods: K-means, Hierarchical Clustering, PCA.</li>
+                            <li>Examples: Customer segmentation, anomaly detection.</li>
+                        </ul>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="tooltip" id="tooltip"></div>
+
+    <script>
+        const supervisedCanvas = document.getElementById('supervisedCanvas');
+        const unsupervisedCanvas = document.getElementById('unsupervisedCanvas');
+        const supervisedCtx = supervisedCanvas.getContext('2d');
+        const unsupervisedCtx = unsupervisedCanvas.getContext('2d');
+        const datasetSelect = document.getElementById('dataset');
+        const playPauseBtn = document.getElementById('playPause');
+        const resetBtn = document.getElementById('reset');
+        const stepForwardBtn = document.getElementById('stepForward');
+        const infoToggleBtn = document.getElementById('infoToggle');
+        const randomizeBtn = document.getElementById('randomize');
+        const supervisedProgress = document.getElementById('supervisedProgress');
+        const unsupervisedProgress = document.getElementById('unsupervisedProgress');
+        const supervisedInfo = document.getElementById('supervisedInfo');
+        const unsupervisedInfo = document.getElementById('unsupervisedInfo');
+        const tooltip = document.getElementById('tooltip');
+        const supervisedClassA = document.getElementById('supervisedClassA');
+        const supervisedClassB = document.getElementById('supervisedClassB');
+        const unsupervisedClassA = document.getElementById('unsupervisedClassA');
+        const unsupervisedClassB = document.getElementById('unsupervisedClassB');
+        const clusterCountSelect = document.getElementById('clusterCount');
+        const supervisedPanel = document.getElementById('supervisedPanel');
+        const unsupervisedPanel = document.getElementById('unsupervisedPanel');
+        const supervisedSidebarInfo = document.getElementById('supervisedSidebarInfo');
+        const unsupervisedSidebarInfo = document.getElementById('unsupervisedSidebarInfo');
+        const tabButtons = document.querySelectorAll('.tab-btn');
+
+        let isPlaying = false;
+        let animationFrame;
+        let step = 0;
+        let dataset = 'simple';
+        let points = [];
+        let weights = [Math.random() * 0.2 - 0.1, Math.random() * 0.2 - 0.1];
+        let bias = Math.random() * 0.2 - 0.1;
+        let clusters = [];
+        let centroids = [];
+        let supervisedSelectedClass = 'A';
+        let unsupervisedSelectedClass = 'A';
+        const colors = ['#e74c3c', '#3498db', '#f1c40f', '#2ecc71'];
+        const MAX_STEPS = 100;
+
+        supervisedCanvas.width = supervisedCanvas.offsetWidth;
+        supervisedCanvas.height = 250;
+        unsupervisedCanvas.width = unsupervisedCanvas.offsetWidth;
+        unsupervisedCanvas.height = 250;
+
+        // Tab switching
+        tabButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                tabButtons.forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+
+                const tab = button.dataset.tab;
+                supervisedPanel.classList.toggle('active', tab === 'supervised');
+                unsupervisedPanel.classList.toggle('active', tab === 'unsupervised');
+
+                supervisedSidebarInfo.style.display = tab === 'supervised' ? 'block' : 'none';
+                unsupervisedSidebarInfo.style.display = tab === 'unsupervised' ? 'block' : 'none';
+
+                supervisedInfo.style.display = 'none';
+                unsupervisedInfo.style.display = 'none';
+            });
+        });
+
+        function generateDataset(type) {
+            points = [];
+            if (type === 'simple') {
+                for (let i = 0; i < 5; i++) {
+                    points.push({ x: Math.random() * 200, y: Math.random() * 200, class: 'A' });
+                    points.push({ x: 200 + Math.random() * 200, y: 200 + Math.random() * 200, class: 'B' });
+                }
+            } else if (type === 'complex') {
+                for (let i = 0; i < 10; i++) {
+                    let x = Math.random() * 400, y = Math.random() * 400;
+                    points.push({ x, y, class: Math.random() > 0.5 ? 'B' : 'A' });
+                }
+            } else if (type === 'random') {
+                for (let i = 0; i < 10; i++) {
+                    let x = Math.random() * 400;
+                    let y = Math.random() * 400;
+                    points.push({ x, y, class: Math.random() > 0.5 ? 'B' : 'A' });
+                }
+            }
+            clusters = Array(points.length).fill(0);
+            initializeCentroids();
+        }
+
+        function initializeCentroids() {
+            centroids = [];
+            const k = parseInt(clusterCountSelect.value);
+            for (let i = 0; i < k; i++) {
+                centroids.push({ x: Math.random() * unsupervisedCanvas.width, y: Math.random() * unsupervisedCanvas.height });
+            }
+        }
+
+        function addPoint(event, canvas, isSupervised) {
+            const rect = canvas.getBoundingClientRect();
+            const x = event.clientX - rect.left;
+            const y = event.clientY - rect.top;
+            const cls = isSupervised ? supervisedSelectedClass : unsupervisedSelectedClass;
+            points.push({ x, y, class: cls });
+            clusters.push(0);
+            drawSupervised();
+            drawUnsupervised();
+        }
+
+        supervisedCanvas.addEventListener('click', (e) => addPoint(e, supervisedCanvas, true));
+        unsupervisedCanvas.addEventListener('click', (e) => addPoint(e, unsupervisedCanvas, false));
+
+        function predict(x, y) {
+            const norm = Math.sqrt(weights[0] * weights[0] + weights[1] * weights[1]);
+            if (norm === 0) return 0;
+            return (weights[0] * x + weights[1] * y + bias) / norm;
+        }
+
+        function updateBoundary() {
+            const learningRate = 0.001;
+            let totalError = 0;
+
+            const classA = { x: 0, y: 0, count: 0 };
+            const classB = { x: 0, y: 0, count: 0 };
+
+            points.forEach(p => {
+                if (p.class === 'A') {
+                    classA.x += p.x;
+                    classA.y += p.y;
+                    classA.count++;
+                } else {
+                    classB.x += p.x;
+                    classB.y += p.y;
+                    classB.count++;
+                }
+            });
+
+            if (classA.count > 0 && classB.count > 0) {
+                classA.x /= classA.count;
+                classA.y /= classA.count;
+                classB.x /= classB.count;
+                classB.y /= classB.count;
+
+                if (step === 21) {
+                    const dx = classB.x - classA.x;
+                    const dy = classB.y - classA.y;
+                    const norm = Math.sqrt(dx * dx + dy * dy);
+                    weights[0] = dx / norm;
+                    weights[1] = dy / norm;
+                    bias = -(weights[0] * (classA.x + classB.x) / 2 + weights[1] * (classA.y + classB.y) / 2);
+                }
+            }
+
+            points.forEach(p => {
+                const target = p.class === 'A' ? -1 : 1;
+                const prediction = predict(p.x, p.y);
+                const error = target - Math.sign(prediction);
+
+                if (error !== 0) {
+                    weights[0] += learningRate * error * p.x;
+                    weights[1] += learningRate * error * p.y;
+                    bias += learningRate * error;
+                    totalError += Math.abs(error);
+                }
+            });
+
+            return totalError === 0;
+        }
+
+        function updateClusters() {
+            if (points.length === 0 || centroids.length === 0) return;
+
+            let changed = false;
+            points.forEach((p, i) => {
+                let minDist = Infinity;
+                let newCluster = 0;
+                centroids.forEach((c, j) => {
+                    const dist = Math.hypot(p.x - c.x, p.y - c.y);
+                    if (dist < minDist) {
+                        minDist = dist;
+                        newCluster = j;
+                    }
+                });
+                if (clusters[i] !== newCluster) {
+                    clusters[i] = newCluster;
+                    changed = true;
+                }
+            });
+
+            const k = centroids.length;
+            const counts = Array(k).fill(0);
+            const newCentroids = Array(k).fill().map(() => ({ x: 0, y: 0 }));
+            points.forEach((p, i) => {
+                const c = clusters[i];
+                newCentroids[c].x += p.x;
+                newCentroids[c].y += p.y;
+                counts[c]++;
+            });
+            centroids.forEach((c, i) => {
+                if (counts[i] > 0) {
+                    c.x = newCentroids[i].x / counts[i];
+                    c.y = newCentroids[i].y / counts[i];
+                }
+            });
+
+            return changed;
+        }
+
+        function drawSupervised() {
+            supervisedCtx.clearRect(0, 0, supervisedCanvas.width, supervisedCanvas.height);
+
+            points.forEach(p => {
+                supervisedCtx.beginPath();
+                supervisedCtx.arc(p.x, p.y, 6, 0, Math.PI * 2);
+                supervisedCtx.fillStyle = p.class === 'A' ? '#e74c3c' : '#3498db';
+                supervisedCtx.fill();
+                supervisedCtx.strokeStyle = '#555';
+                supervisedCtx.stroke();
+
+                if (step > 10) {
+                    supervisedCtx.fillStyle = '#333';
+                    supervisedCtx.font = '12px Arial';
+                    supervisedCtx.fillText(p.class, p.x + 10, p.y);
+                }
+            });
+
+            if (step > 20 && points.length >= 2) {
+                drawDecisionBoundary();
+            }
+
+            supervisedProgress.style.width = `${Math.min((step / MAX_STEPS) * 100, 100)}%`;
+        }
+
+        function drawUnsupervised() {
+            unsupervisedCtx.clearRect(0, 0, unsupervisedCanvas.width, unsupervisedCanvas.height);
+            points.forEach((p, i) => {
+                unsupervisedCtx.beginPath();
+                unsupervisedCtx.arc(p.x, p.y, 6, 0, Math.PI * 2);
+                unsupervisedCtx.fillStyle = step > 20 ? colors[clusters[i] % colors.length] : (p.class === 'A' ? '#e74c3c' : '#3498db');
+                unsupervisedCtx.fill();
+                unsupervisedCtx.strokeStyle = '#555';
+                unsupervisedCtx.stroke();
+                if (step > 20) {
+                    unsupervisedCtx.shadowBlur = 10;
+                    unsupervisedCtx.shadowColor = colors[clusters[i] % colors.length];
+                    unsupervisedCtx.fill();
+                    unsupervisedCtx.shadowBlur = 0;
+                }
+            });
+
+            if (step > 20) {
+                centroids.forEach((c, i) => {
+                    unsupervisedCtx.beginPath();
+                    unsupervisedCtx.arc(c.x, c.y, 10, 0, Math.PI * 2);
+                    unsupervisedCtx.fillStyle = colors[i % colors.length];
+                    unsupervisedCtx.fill();
+                    unsupervisedCtx.strokeStyle = '#fff';
+                    unsupervisedCtx.lineWidth = 2;
+                    unsupervisedCtx.stroke();
+                });
+            }
+            unsupervisedProgress.style.width = `${Math.min((step / MAX_STEPS) * 100, 100)}%`;
+        }
+
+        function drawDecisionBoundary() {
+            if (points.length < 2) return;
+
+            supervisedCtx.beginPath();
+            supervisedCtx.strokeStyle = '#28a745';
+            supervisedCtx.lineWidth = 2;
+            supervisedCtx.setLineDash([5, 5]);
+
+            let centerX = 0, centerY = 0;
+            points.forEach(p => {
+                centerX += p.x;
+                centerY += p.y;
+            });
+            centerX /= points.length;
+            centerY /= points.length;
+
+            const norm = Math.sqrt(weights[0] * weights[0] + weights[1] * weights[1]);
+            if (norm === 0) return;
+
+            const dx = -weights[1] / norm;
+            const dy = weights[0] / norm;
+            const extension = Math.max(supervisedCanvas.width, supervisedCanvas.height);
+
+            const x1 = centerX + dx * extension;
+            const y1 = centerY + dy * extension;
+            const x2 = centerX - dx * extension;
+            const y2 = centerY - dy * extension;
+
+            supervisedCtx.moveTo(x1, y1);
+            supervisedCtx.lineTo(x2, y2);
+            supervisedCtx.stroke();
+            supervisedCtx.setLineDash([]);
+        }
+
+        function update() {
+            step++;
+            if (step <= MAX_STEPS) {
+                if (step > 20) {
+                    const allCorrect = updateBoundary();
+                    updateClusters();
+                    if (allCorrect && !isPlaying) {
+                        step = MAX_STEPS;
+                    }
+                }
+                drawSupervised();
+                drawUnsupervised();
+                if (isPlaying) animationFrame = requestAnimationFrame(update);
+            }
+        }
+
+        function showTooltip(event, canvas, isSupervised) {
+            const rect = canvas.getBoundingClientRect();
+            const x = event.clientX - rect.left;
+            const y = event.clientY - rect.top;
+            points.forEach((p, i) => {
+                if (Math.hypot(p.x - x, p.y - y) < 10) {
+                    tooltip.style.left = `${event.clientX + 10}px`;
+                    tooltip.style.top = `${event.clientY - 10}px`;
+                    tooltip.textContent = isSupervised ? `Class: ${p.class}` : (step > 20 ? `Cluster: ${clusters[i]}` : `Group: ${p.class}`);
+                    tooltip.style.display = 'block';
+                }
+            });
+        }
+
+        supervisedCanvas.addEventListener('mousemove', (e) => showTooltip(e, supervisedCanvas, true));
+        unsupervisedCanvas.addEventListener('mousemove', (e) => showTooltip(e, unsupervisedCanvas, false));
+        supervisedCanvas.addEventListener('mouseout', () => tooltip.style.display = 'none');
+        unsupervisedCanvas.addEventListener('mouseout', () => tooltip.style.display = 'none');
+
+        supervisedClassA.addEventListener('click', () => {
+            supervisedSelectedClass = 'A';
+            supervisedClassA.classList.add('active');
+            supervisedClassB.classList.remove('active');
+        });
+        supervisedClassB.addEventListener('click', () => {
+            supervisedSelectedClass = 'B';
+            supervisedClassB.classList.add('active');
+            supervisedClassA.classList.remove('active');
+        });
+
+        unsupervisedClassA.addEventListener('click', () => {
+            unsupervisedSelectedClass = 'A';
+            unsupervisedClassA.classList.add('active');
+            unsupervisedClassB.classList.remove('active');
+        });
+        unsupervisedClassB.addEventListener('click', () => {
+            unsupervisedSelectedClass = 'B';
+            unsupervisedClassB.classList.add('active');
+            unsupervisedClassA.classList.remove('active');
+        });
+
+        clusterCountSelect.addEventListener('change', () => {
+            initializeCentroids();
+            step = 0;
+            drawUnsupervised();
+        });
+
+        playPauseBtn.addEventListener('click', () => {
+            isPlaying = !isPlaying;
+            playPauseBtn.textContent = isPlaying ? 'Pause' : 'Play';
+            if (isPlaying) animationFrame = requestAnimationFrame(update);
+            else cancelAnimationFrame(animationFrame);
+        });
+
+        resetBtn.addEventListener('click', () => {
+            step = 0;
+            const range = 0.5;
+            weights = [Math.random() * range - range/2, Math.random() * range - range/2];
+            bias = Math.random() * range - range/2;
+            initializeCentroids();
+            isPlaying = false;
+            playPauseBtn.textContent = 'Play';
+            points = [];
+            drawSupervised();
+            drawUnsupervised();
+        });
+
+        stepForwardBtn.addEventListener('click', () => {
+            if (step < MAX_STEPS) {
+                update();
+            }
+        });
+
+        infoToggleBtn.addEventListener('click', () => {
+            if (supervisedPanel.classList.contains('active')) {
+                supervisedInfo.style.display = supervisedInfo.style.display === 'block' ? 'none' : 'block';
+            } else if (unsupervisedPanel.classList.contains('active')) {
+                unsupervisedInfo.style.display = unsupervisedInfo.style.display === 'block' ? 'none' : 'block';
+            }
+        });
+
+        randomizeBtn.addEventListener('click', () => {
+            dataset = 'random';
+            generateDataset('random');
+            step = 0;
+            const range = 0.5;
+            weights = [Math.random() * range - range/2, Math.random() * range - range/2];
+            bias = Math.random() * range - range/2;
+            initializeCentroids();
+            isPlaying = false;
+            playPauseBtn.textContent = 'Play';
+            drawSupervised();
+            drawUnsupervised();
+        });
+
+        datasetSelect.addEventListener('change', () => {
+            dataset = datasetSelect.value;
+            generateDataset(dataset);
+            resetBtn.click();
+        });
+
+        generateDataset('simple');
+        drawSupervised();
+        drawUnsupervised();
+    </script>
+</body>
+</html>
