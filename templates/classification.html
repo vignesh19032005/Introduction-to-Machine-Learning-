@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Classification Boundaries</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-left">
+            <a href="/">← Back to Dashboard</a>
+        </div>
+    </nav>
+    <div class="container regression-container">
+        <h1>Classification Boundaries</h1>
+        <div class="regression-content">
+            <div class="plot-section">
+                <h2>Classification Visualization</h2>
+                <p>Watch how classification decision boundaries form as the model learns.</p>
+                <div id="classification-plot"></div>
+            </div>
+            <div class="controls-section">
+                <h2>Model Controls</h2>
+                <p>Adjust parameters and see the model learn in real-time</p>
+                <div class="control-group">
+                    <label>Test Set Size</label>
+                    <input type="range" id="test_size" min="0.1" max="0.5" step="0.05" value="0.2">
+                    <span id="test_size_value">0.20</span>
+                </div>
+                <div class="control-group">
+                    <label>Class Separation</label>
+                    <input type="range" id="separation" min="0.1" max="2" step="0.1" value="1">
+                    <span id="separation_value">1.00</span>
+                </div>
+                <div class="control-group">
+                    <label>Regularization</label>
+                    <input type="range" id="regularization" min="0.1" max="10" step="0.1" value="1">
+                    <span id="regularization_value">1.00</span>
+                </div>
+                <div class="control-group">
+                    <h3>Model Performance</h3>
+                    <p>Accuracy: <span id="accuracy">0.00%</span></p>
+                    <div id="confusion-matrix" style="width: 200px; height: 200px;"></div>
+                </div>
+                <div class="buttons">
+                    <button id="update_classification">Update Model</button>
+                    <button id="reset_classification">Reset</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="/static/js/app.js"></script>
+</body>
+</html>

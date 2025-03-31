@@ -1,0 +1,40 @@
+{% extends "index.html" %}
+{% block content %}
+<div class="visualization">
+    <h2>📈 Interactive Regression Exploration</h2>
+    <div id="regression-plot"></div> <!-- Replace img with div for Plotly -->
+</div>
+<div class="parameters">
+    <h3>Regression Parameters</h3>
+    <form id="param-form">
+        <label>Learning Rate:</label><br>
+        <input type="range" id="learning_rate" name="learning_rate" min="0.001" max="0.1" step="0.001" value="0.01" oninput="this.nextElementSibling.value = parseFloat(this.value).toFixed(4)">
+        <output id="learning_rate_value">0.0100</output><br>
+        
+        <label>Slope:</label><br>
+        <input type="range" id="slope" name="slope" min="-2" max="2" step="0.1" value="0.5" oninput="this.nextElementSibling.value = parseFloat(this.value).toFixed(4)">
+        <output id="slope_value">0.5</output><br>
+        
+        <label>Intercept:</label><br>
+        <input type="range" id="intercept" name="intercept" min="-5" max="5" step="0.5" value="2" oninput="this.nextElementSibling.value = parseFloat(this.value).toFixed(4)">
+        <output id="intercept_value">2</output><br>
+
+        <!-- Add buttons referenced in app.js -->
+        <button type="button" id="start_learning">Start Learning</button>
+        <button type="button" id="calculate_best_fit">Calculate Best Fit</button>
+        <button type="button" id="reset_points">Reset Points</button>
+        <button type="button" id="clear_points">Clear Points</button>
+    </form>
+</div>
+{% endblock %}
+
+{% block footer %}
+<div class="model-info">
+    <h3>Model Performance</h3>
+    <p><strong>Mean Squared Error:</strong> <span id="mse">{{ mse }}</span> - Measures the average squared difference between predicted and actual values.</p>
+    <p><strong>R-squared:</strong> <span id="r2">{{ r2 }}</span> - Proportion of variance explained by the model (0 to 1).</p>
+    <p><strong>Model Slope:</strong> <span id="model_slope">N/A</span></p>
+    <p><strong>Model Intercept:</strong> <span id="model_intercept">N/A</span></p>
+    <p><strong>Iterations:</strong> <span id="iterations">0</span></p>
+</div>
+{% endblock %}

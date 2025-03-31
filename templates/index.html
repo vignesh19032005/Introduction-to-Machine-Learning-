@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive ML Visualizations</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <!-- Add Plotly for regression plotting -->
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    {% block head %}{% endblock %}
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-left">ML Interactive</div>
+        <div class="nav-right">
+            <a href="#">About</a>
+            <a href="#">Documentation</a>
+        </div>
+    </nav>
+    {% block content %}
+    <div class="container">
+        <h1 class="main-heading">Interactive Machine Learning Visualizations</h1>
+        <p>Explore key machine learning concepts through interactive visuals</p>
+        <div class="cards">
+            <div class="card">
+                <h3>Regression Model Learning</h3>
+                <p>Visualize how a regression model learns by fitting a line to data points</p>
+                <a href="/regression_page" class="btn">Explore Regression →</a>
+            </div>
+            <div class="card">
+                <h3>Classification Boundaries</h3>
+                <p>Watch how classification decision boundaries form as the model learns</p>
+                <a href="/classification_page" class="btn">Explore Classification →</a>
+            </div>
+            <div class="card">
+                <h3>Hyperparameter Tuning</h3>
+                <p>Adjust model parameters and see how they affect predictions in real-time</p>
+                <a href="/hyperparameter_page" class="btn">Explore Hyperparameters →</a>
+            </div>
+        </div>
+    </div>
+    {% endblock %}
+    {% block footer %}{% endblock %}
+    <script src="/static/js/app.js"></script>
+</body>
+</html>
