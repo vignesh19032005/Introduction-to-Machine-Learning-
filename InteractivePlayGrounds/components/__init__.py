@@ -1,0 +1,3 @@
+from components.regression_page import show_regression_page
+from components.classifier_page import show_classifier_page
+from components.prediction_page import show_prediction_page
